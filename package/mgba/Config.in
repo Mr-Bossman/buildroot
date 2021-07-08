@@ -1,0 +1,6 @@
+config BR2_PACKAGE_MGBA
+	bool "MGBA"
+	depends on BR2_PACKAGE_GLIBC
+	select BR2_PACKAGE_SDL2
+	help 
+	
