@@ -1137,6 +1137,7 @@ F:	package/at/
 F:	package/binutils/
 F:	package/cryptsetup/
 F:	package/erlang-jiffy/
+F:	package/esp-hosted-ng/
 F:	package/gcc/
 F:	package/harfbuzz/
 F:	package/libfuse3/
