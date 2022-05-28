@@ -1,0 +1,51 @@
+From 1f93f764bce79de1032baac6cd300a4328780768 Mon Sep 17 00:00:00 2001
+From: Giulio Benetti <giulio.benetti@benettiengineering.com>
+Date: Sun, 25 Sep 2022 00:29:51 +0200
+Subject: [PATCH] esp_hosted_Xg/host: fix driver build failure with Linux
+ version >= 5.17
+
+Starting from Linux 5.17 do_exit() is not exported anymore, so let's use
+`#define do_exit(code)` locally as `kthread_complete_and_exit(NULL, code)`
+instead.
+`kthread_complete_and_exit()` basically calls `do_exit()` and in our
+case it doesn't call 'complete(comp)' callback since 'comp = NULL'.
+
+Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+[Upstream status: https://github.com/espressif/esp-hosted/pull/147]
+---
+ esp_hosted_fg/host/linux/host_driver/esp32/esp.h | 5 +++++
+ esp_hosted_ng/host/sdio/esp_sdio.c               | 4 ++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/esp_hosted_fg/host/linux/host_driver/esp32/esp.h b/esp_hosted_fg/host/linux/host_driver/esp32/esp.h
+index cf63710..7afcd12 100644
+--- a/esp_hosted_fg/host/linux/host_driver/esp32/esp.h
++++ b/esp_hosted_fg/host/linux/host_driver/esp32/esp.h
+@@ -82,4 +82,9 @@ struct esp_private {
+ struct esp_skb_cb {
+ 	struct esp_private      *priv;
+ };
++
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0))
++#define do_exit(code)	kthread_complete_and_exit(NULL, code)
++#endif
++
+ #endif
+diff --git a/esp_hosted_ng/host/sdio/esp_sdio.c b/esp_hosted_ng/host/sdio/esp_sdio.c
+index 008b2ff..b8e54c7 100644
+--- a/esp_hosted_ng/host/sdio/esp_sdio.c
++++ b/esp_hosted_ng/host/sdio/esp_sdio.c
+@@ -59,6 +59,10 @@ static const struct sdio_device_id esp_devices[] = {
+ 	{}
+ };
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0))
++#define do_exit(code)	kthread_complete_and_exit(NULL, code)
++#endif
++
+ static void esp_process_interrupt(struct esp_sdio_context *context, u32 int_status)
+ {
+ 	if (!context) {
+-- 
+2.34.1
+

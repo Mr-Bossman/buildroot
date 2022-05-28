@@ -489,6 +489,7 @@ endmenu
 	source "package/dvbsnoop/Config.in"
 	source "package/edid-decode/Config.in"
 	source "package/edk2-platforms/Config.in"
+	source "package/esp-hosted-ng/Config.in"
 	source "package/eudev/Config.in"
 	source "package/ev3dev-linux-drivers/Config.in"
 	source "package/evemu/Config.in"

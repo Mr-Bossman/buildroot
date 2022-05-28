@@ -1,0 +1,34 @@
+From 715ed9c28c1b630e9339fbd22a55629004742f61 Mon Sep 17 00:00:00 2001
+From: Giulio Benetti <giulio.benetti@benettiengineering.com>
+Date: Tue, 22 Nov 2022 17:33:42 +0100
+Subject: [PATCH] esp_hosted_ng/host/main.c: fix build with Linux 5.18
+
+netif_rx_ni() has been removed with commit [0] but it was only calling
+netif_rx(), so let's call directly netif_rx() if Linux >= 5.18.
+
+[0]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2655926aea9beea62c9ba80c032485456fd848f0
+
+Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+---
+ esp_hosted_ng/host/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/esp_hosted_ng/host/main.c b/esp_hosted_ng/host/main.c
+index 28632e4..00bace3 100644
+--- a/esp_hosted_ng/host/main.c
++++ b/esp_hosted_ng/host/main.c
+@@ -603,7 +603,11 @@ static void process_rx_packet(struct esp_adapter *adapter, struct sk_buff *skb)
+ 
+ 			priv->stats.rx_bytes += skb->len;
+ 			/* Forward skb to kernel */
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
++			netif_rx(skb);
++#else
+ 			netif_rx_ni(skb);
++#endif
+ 
+ 			priv->stats.rx_packets++;
+ 		} else if (payload_header->packet_type == PACKET_TYPE_COMMAND_RESPONSE) {
+-- 
+2.34.1
+
