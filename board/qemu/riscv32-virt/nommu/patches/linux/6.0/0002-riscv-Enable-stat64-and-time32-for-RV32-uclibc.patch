@@ -1,0 +1,40 @@
+From 1d985b3cd0fdb37567b4b8263cae740b49a1f46a Mon Sep 17 00:00:00 2001
+From: Yimin Gu <ustcymgu@gmail.com>
+Date: Sat, 10 Dec 2022 22:31:06 -0500
+Subject: [PATCH 2/3] riscv: Enable stat64 and time32 for RV32 uclibc
+
+To comply with current uclibc, macros __ARCH_WANT_STAT64 and
+__ARCH_WANT_TIME32_SYSCALLS are defined. CONFIG_COMPAT_32BIT_TIME also
+has to be turned on.
+
+Tested-By: Waldemar Brodkorb <wbx@openadk.org>
+Signed-off-by: Yimin Gu <ustcymgu@gmail.com>
+Cc: Jesse Taube <Mr.Bossman075@gmail.com>
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+---
+ arch/riscv/include/uapi/asm/unistd.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/arch/riscv/include/uapi/asm/unistd.h b/arch/riscv/include/uapi/asm/unistd.h
+index 73d7cdd2ec49..3dc774bc201f 100644
+--- a/arch/riscv/include/uapi/asm/unistd.h
++++ b/arch/riscv/include/uapi/asm/unistd.h
+@@ -15,9 +15,14 @@
+  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  */
+ 
+-#if defined(__LP64__) && !defined(__SYSCALL_COMPAT)
++#ifndef __SYSCALL_COMPAT
+ #define __ARCH_WANT_NEW_STAT
+ #define __ARCH_WANT_SET_GET_RLIMIT
++#endif /* __SYSCALL_COMPAT */
++
++#ifndef __LP64__
++#define __ARCH_WANT_STAT64
++#define __ARCH_WANT_TIME32_SYSCALLS
+ #endif /* __LP64__ */
+ 
+ #define __ARCH_WANT_SYS_CLONE3
+-- 
+2.38.1
+
