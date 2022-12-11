@@ -1,0 +1,87 @@
+From 4a4e8551b7f14ecd2092debbe256c667497a256d Mon Sep 17 00:00:00 2001
+From: Yimin Gu <ustcymgu@gmail.com>
+Date: Wed, 14 Dec 2022 06:49:46 -0500
+Subject: [PATCH] Added RISC-V 32-bit support
+
+Allow elf2flt to work with RISC-V 32-bit targets. With these changes, the
+uclibc toolchain and busybox can work fine for rv32 no MMU systems with
+no noticable problem.
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+[Add more ELF relco types and edit commit message]
+Signed-off-by: Yimin Gu <ustcymgu@gmail.com>
+---
+ elf2flt.c    | 18 +++++++++++++++---
+ ld-elf2flt.c |  2 +-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/elf2flt.c b/elf2flt.c
+index 99ad2a8..23c9907 100644
+--- a/elf2flt.c
++++ b/elf2flt.c
+@@ -81,7 +81,7 @@ const char *elf2flt_progname;
+ #include <elf/v850.h>
+ #elif defined(TARGET_xtensa)
+ #include <elf/xtensa.h>
+-#elif defined(TARGET_riscv64)
++#elif defined(TARGET_riscv64) || defined(TARGET_riscv32)
+ #include <elf/riscv.h>
+ #endif
+ 
+@@ -127,6 +127,8 @@ const char *elf2flt_progname;
+ #define ARCH	"xtensa"
+ #elif defined(TARGET_riscv64)
+ #define ARCH	"riscv64"
++#elif defined(TARGET_riscv32)
++#define ARCH	"riscv32"
+ #else
+ #error "Don't know how to support your CPU architecture??"
+ #endif
+@@ -351,7 +353,8 @@ ro_reloc_data_section_should_be_in_text(asection *s)
+ {
+   if ((s->flags & (SEC_DATA | SEC_READONLY | SEC_RELOC)) ==
+       (SEC_DATA | SEC_READONLY | SEC_RELOC)) {
+-#if defined(TARGET_m68k) || defined(TARGET_riscv64) || defined(TARGET_xtensa)
++#if defined(TARGET_m68k) || defined(TARGET_riscv64) || \
++      defined(TARGET_riscv32) || defined(TARGET_xtensa)
+     if (!strcmp(".eh_frame", s->name))
+       return false;
+ #endif
+@@ -851,12 +854,21 @@ output_relocs (
+ 					break;
+ 				default:
+ 					goto bad_resolved_reloc;
+-#elif defined(TARGET_riscv64)
++#elif defined(TARGET_riscv64) || defined(TARGET_riscv32)
+ 				case R_RISCV_32_PCREL:
++				case R_RISCV_ADD8:
++				case R_RISCV_ADD16:
+ 				case R_RISCV_ADD32:
+ 				case R_RISCV_ADD64:
++				case R_RISCV_SUB6:
++				case R_RISCV_SUB8:
++				case R_RISCV_SUB16:
+ 				case R_RISCV_SUB32:
+ 				case R_RISCV_SUB64:
++				case R_RISCV_SET6:
++				case R_RISCV_SET8:
++				case R_RISCV_SET16:
++				case R_RISCV_SET32:
+ 					continue;
+ 				case R_RISCV_32:
+ 				case R_RISCV_64:
+diff --git a/ld-elf2flt.c b/ld-elf2flt.c
+index 75ee1bb..68b2a4a 100644
+--- a/ld-elf2flt.c
++++ b/ld-elf2flt.c
+@@ -327,7 +327,7 @@ static int do_final_link(void)
+ 	/* riscv adds a global pointer symbol to the linker file with the
+ 	   "RISCV_GP:" prefix. Remove the prefix for riscv64 architecture and
+ 	   the entire line for other architectures. */
+-	if (streq(TARGET_CPU, "riscv64"))
++	if (streq(TARGET_CPU, "riscv64") || streq(TARGET_CPU, "riscv32"))
+ 		append_sed(&sed, "^RISCV_GP:", "");
+ 	else
+ 		append_sed(&sed, "^RISCV_GP:", NULL);
+-- 
+2.38.1
+
