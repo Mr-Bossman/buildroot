@@ -1,0 +1,45 @@
+From 626bb9bfaa2193614fb91151e97dd7f4f8540a4d Mon Sep 17 00:00:00 2001
+From: Jesse Taube <Mr.Bossman075@gmail.com>
+Date: Wed, 14 Dec 2022 21:00:49 -0500
+Subject: [PATCH] haaaack
+
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+---
+ arch/riscv/Makefile     | 2 +-
+ scripts/link-vmlinux.sh | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+index 3fa8ef336822..163437163e0d 100644
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -46,7 +46,7 @@ endif
+ endif
+ 
+ # ISA string setting
+-riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ima
++riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ia
+ riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
+ riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
+ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index eecc1863e556..cce88d128d5a 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -98,10 +98,12 @@ vmlinux_link()
+ 		ldflags="${ldflags} ${wl}-Map=${output}.map"
+ 	fi
+ 
++	pwd
++
+ 	${ld} ${ldflags} -o ${output}					\
+ 		${wl}--whole-archive ${objs} ${wl}--no-whole-archive	\
+ 		${wl}--start-group ${libs} ${wl}--end-group		\
+-		$@ ${ldlibs}
++		$@ ${ldlibs} -L../../host/lib/gcc/riscv32-buildroot-linux-uclibc/12.2.0/libgcc.a -lgcc
+ }
+ 
+ # generate .BTF typeinfo from DWARF debuginfo
+-- 
+2.38.1
+
