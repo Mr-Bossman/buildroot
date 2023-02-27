@@ -1,0 +1,8 @@
+Port 22
+AddressFamily any
+ListenAddress 0.0.0.0
+PermitRootLogin yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+AcceptEnv LANG LC_*
+
