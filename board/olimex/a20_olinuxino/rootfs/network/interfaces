@@ -1,0 +1,5 @@
+auto lo
+iface lo inet loopback
+
+auto espsta0
+iface espsta0 inet dhcp
