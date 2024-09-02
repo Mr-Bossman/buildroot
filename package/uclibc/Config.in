@@ -78,13 +78,13 @@ choice
 
 config BR2_PTHREADS_NATIVE
 	bool "Native POSIX Threading (NPTL)"
-	depends on BR2_USE_MMU
+	depends on BR2_USE_MMU && (!BR2_riscv || BR2_RISCV_ISA_RVA)
 	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
 
 config BR2_PTHREADS
 	bool "linuxthreads"
-	depends on !BR2_aarch64 && !BR2_aarch64_be
+	depends on !BR2_aarch64 && !BR2_aarch64_be && (!BR2_riscv || BR2_RISCV_ISA_RVA)
 	select BR2_TOOLCHAIN_HAS_THREADS
 
 config BR2_PTHREADS_NONE

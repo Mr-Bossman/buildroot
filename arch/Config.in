@@ -431,7 +431,7 @@ choice
 config BR2_BINFMT_ELF
 	bool "ELF"
 	depends on BR2_USE_MMU
-	select BR2_BINFMT_SUPPORTS_SHARED
+	select BR2_BINFMT_SUPPORTS_SHARED if !BR2_riscv || BR2_RISCV_ISA_RVA
 	help
 	  ELF (Executable and Linkable Format) is a format for libraries
 	  and executables used across different architectures and
