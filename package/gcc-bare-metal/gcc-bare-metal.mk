@@ -56,6 +56,30 @@ HOST_GCC_BARE_METAL_CONF_OPTS = \
 	--with-isl=$(HOST_DIR) \
 	$(call qstrip,$(BR2_EXTRA_GCC_BARE_METAL_CONF_OPTIONS))
 
+ifeq ($(BR2_SOFT_FLOAT),y)
+# only mips*-*-*, arm*-*-* and sparc*-*-* accept --with-float
+# powerpc seems to be needing it as well
+ifeq ($(BR2_arm)$(BR2_armeb)$(BR2_mips)$(BR2_mipsel)$(BR2_mips64)$(BR2_mips64el)$(BR2_powerpc)$(BR2_sparc),y)
+HOST_GCC_BARE_METAL_CONF_OPTS += --with-float=soft
+endif
+endif
+
+# Determine arch/tune/abi/cpu options
+ifneq ($(GCC_TARGET_ARCH),)
+HOST_GCC_BARE_METAL_CONF_OPTS += --with-arch="$(GCC_TARGET_ARCH)"
+endif
+ifneq ($(GCC_TARGET_ABI),)
+HOST_GCC_BARE_METAL_CONF_OPTS += --with-abi="$(GCC_TARGET_ABI)"
+endif
+
+ifneq ($(GCC_TARGET_FPU),)
+HOST_GCC_BARE_METAL_CONF_OPTS += --with-fpu=$(GCC_TARGET_FPU)
+endif
+
+ifneq ($(GCC_TARGET_FLOAT_ABI),)
+HOST_GCC_BARE_METAL_CONF_OPTS += --with-float=$(GCC_TARGET_FLOAT_ABI)
+endif
+
 define HOST_GCC_BARE_METAL_CONFIGURE_CMDS
 	$(foreach arch_tuple, $(TOOLCHAIN_BARE_METAL_BUILDROOT_ARCH_TUPLE), \
 		mkdir -p $(@D)/build-$(arch_tuple) && \
