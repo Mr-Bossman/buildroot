@@ -12,6 +12,14 @@ config BR2_TOOLCHAIN_BARE_METAL_BUILDROOT_ARCH
 	  metal toolchain, use the following definition:
 	  "microblazeel-buildroot-elf riscv32-buildroot-elf"
 
+config BR2_EXTRA_GCC_BARE_METAL_CONF_OPTIONS
+	string "Additional bare-metal gcc options"
+	default ""
+	help
+	  Any additional bare-metal gcc configure options you
+	  may want to include. Affects al architecture tuples
+	  specified in BR2_TOOLCHAIN_BARE_METAL_BUILDROOT_ARCH.
+
 source "package/newlib-bare-metal/Config.in"
 
 endif # BR2_TOOLCHAIN_BARE_METAL_BUILDROOT

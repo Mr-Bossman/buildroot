@@ -53,7 +53,8 @@ HOST_GCC_BARE_METAL_CONF_OPTS = \
 	--with-gmp=$(HOST_DIR) \
 	--with-mpc=$(HOST_DIR) \
 	--with-mpfr=$(HOST_DIR) \
-	--with-isl=$(HOST_DIR)
+	--with-isl=$(HOST_DIR) \
+	$(call qstrip,$(BR2_EXTRA_GCC_BARE_METAL_CONF_OPTIONS))
 
 define HOST_GCC_BARE_METAL_CONFIGURE_CMDS
 	$(foreach arch_tuple, $(TOOLCHAIN_BARE_METAL_BUILDROOT_ARCH_TUPLE), \
