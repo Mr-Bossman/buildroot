@@ -5,7 +5,8 @@ config BR2_TARGET_GRUB2_ARCH_SUPPORTS
 	default y if BR2_arm
 	default y if BR2_aarch64
 	default y if BR2_RISCV_64
-	default y if BR2_loongarch64
+	default y if BR2_mips
+	default y if BR2_mipsel
 	depends on BR2_USE_MMU
 
 menuconfig BR2_TARGET_GRUB2
@@ -121,6 +122,20 @@ config BR2_TARGET_GRUB2_LOONGARCH64_EFI
 	  Select this option if the platform you're targeting is a
 	  64bit LoongArch platform and you want to boot Grub 2 as an EFI
 	  application.
+
+config BR2_TARGET_GRUB2_MIPS_ARC
+	bool "mips-arc"
+	depends on BR2_mips
+	help
+	  Select this option if the platform you're targeting is a
+	  x86 or x86-64 legacy BIOS based platform.
+
+config BR2_TARGET_GRUB2_MIPSEL_ARC
+	bool "mipsel-arc"
+	depends on BR2_mipsel
+	help
+	  Select this option if the platform you're targeting is a
+	  x86 or x86-64 legacy BIOS based platform.
 
 if BR2_TARGET_GRUB2_HAS_LEGACY_BOOT
 
